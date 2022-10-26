@@ -76,9 +76,6 @@ jobs:
           path: 'package.json'
           prop_path: 'version'
 
-      - name: Install Build Tools
-        run: npm i -g windows-build-tools
-
       - name: Build
         run: npm run build:win
 

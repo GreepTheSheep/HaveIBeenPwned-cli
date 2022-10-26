@@ -4,8 +4,8 @@
   "description": "HaveIBeenPwned CLI",
   "main": "index.js",
   "scripts": {
-    "build:linux": "nexe index.js -o dist/HaveIBeenPwned-cli-linux -n HaveIBeenPwned -b",
-    "build:win": "nexe index.js -o dist/HaveIBeenPwned-cli-win.exe -n HaveIBeenPwned -b"
+    "build:linux": "nexe -i src/index.js -o dist/HaveIBeenPwned-cli-linux -n HaveIBeenPwned -b",
+    "build:win": "nexe -i src/index.js -o dist/HaveIBeenPwned-cli-win.exe -n HaveIBeenPwned -b"
   },
   "repository": {
     "type": "git",
