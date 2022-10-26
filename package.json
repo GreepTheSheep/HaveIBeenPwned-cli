@@ -1,0 +1,31 @@
+{
+  "name": "haveibeenpwned",
+  "version": "0.1.0",
+  "description": "HaveIBeenPwned CLI",
+  "main": "index.js",
+  "scripts": {
+    "build:linux": "nexe index.js -o dist/HaveIBeenPwned-cli-linux -n HaveIBeenPwned -b",
+    "build:win": "nexe index.js -o dist/HaveIBeenPwned-cli-win.exe -n HaveIBeenPwned -b"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GreepTheSheep/HaveIBeenPwned-cli.git"
+  },
+  "author": {
+    "name": "Greep",
+    "email": "89matt89.md@gmail.com",
+    "url": "https://greep.gq/"
+  },
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/GreepTheSheep/HaveIBeenPwned-cli/issues"
+  },
+  "homepage": "https://github.com/GreepTheSheep/HaveIBeenPwned-cli#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {
+    "nexe": "^4.0.0-rc.1"
+  }
+}
