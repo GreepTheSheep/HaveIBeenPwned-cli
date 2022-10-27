@@ -39,8 +39,8 @@ jobs:
       - name: Upload binaries
         uses: actions/upload-artifact@v2
         with:
-          name: haveibeenpwned-binaries-linux
-          path: dist/*.*
+          name: haveibeenpwned-binaries
+          path: dist/*
 
       - name: Create a release
         uses: softprops/action-gh-release@v1
@@ -49,4 +49,4 @@ jobs:
           tag_name: v${{steps.version.outputs.prop}}
           prerelease: ${{ env.PRERELEASE }}
           draft: ${{ env.DRAFT }}
-          files: dist/*.*
+          files: dist/*
