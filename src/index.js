@@ -1,7 +1,7 @@
+renderTitle();
 require('dotenv').config();
 const fetch = require("node-fetch");
 const fs = require('fs');
-const path = require('path');
 const wait = require('util').promisify(setTimeout);
 
 let KEY = process.env.API_KEY;
@@ -31,12 +31,8 @@ if (KEY == "") {
 }
 
 let inFile = execArgs.filter(e=>e[0] == "f" || e[0] == 'file')[0][1];
-if (inFile.startsWith('.'))
-    inFile = path.join(__dirname, inFile);
 
 let outFile = execArgs.filter(e=>e[0] == "o" || e[0] == 'out')[0][1];
-if (outFile.startsWith('.'))
-    outFile = path.join(__dirname, outFile);
 
 let includeNotBreached = execArgs.filter(e=>e[0] == 'all').length > 0;
 let verbose = execArgs.filter(e=>e[0] == 'v').length > 0;
@@ -44,29 +40,32 @@ let verbose = execArgs.filter(e=>e[0] == 'v').length > 0;
 if (inFile) {
     let content = fs.readFileSync(inFile).toString();
     let contentTab = content.split("\r\n").filter(t=>t !== '');
-    if (verbose) console.log('entry', contentTab);
+    if (verbose) console.log('mails list', contentTab);
     checkAddresses(contentTab);
 } else {
     if (execArgs.filter(e=>e[0] == 'e' || e[0] == 'email').length > 0) {
         let email = execArgs.filter(e=>e[0] == "e" || e[0] == 'email')[0][1];
-        if (verbose) console.log('entry', email);
+        if (verbose) console.log('mail ', email);
         checkAddress(email);
     } else returnHelpAndExit();
 }
 
 async function checkAddresses(addresses) {
+    let pwnedAccounts = 0;
     for (let i = 0; i < addresses.length; i++) {
-        checkAddress(addresses[i]);
+        if (verbose) console.log(':: Checking address', addresses[i]);
+        if (checkAddress(addresses[i])) pwnedAccounts++;
         await wait(2000);
     }
+    renderResults(addresses.length, pwnedAccounts);
 }
 
-function checkAddress(address) {
-    getPwnedAPI(address).then(r=>{
+async function checkAddress(address) {
+    await getPwnedAPI(address).then(r=>{
         if (verbose) console.log(address, r);
         else {
-            if (Array.isArray(r)) console.log(address, "is breached!");
-            else console.log(address, r);
+            if (Array.isArray(r)) console.log(">", address, "is breached!");
+            else console.log(">", address, r);
         }
         if (outFile) {
             let csvString;
@@ -82,6 +81,9 @@ function checkAddress(address) {
                 else
                     fs.writeFileSync(outFile, csvString);
         }
+    }).catch(e=>{
+        console.error("!! Error:", address, e.message);
+        if (e.code == 401) process.exit(e.code);
     });
 }
 
@@ -101,11 +103,21 @@ async function getPwnedAPI(account, service = "breachedaccount", parameters = "i
             return json.map(j=>j.Name);
         case 429:
             //Rate limit
-            throw new Error("rate limit");
+            throw new APIError(res.status, "rate limit");
         default:
             // Unexcepted
-            throw new Error("unexcepted");
+            let jsonE = await res.json(),
+                errorMessage = "Unexcepted"
+            if (jsonE) errorMessage = jsonE.message;
+            throw new APIError(res.status, errorMessage);
     }
+}
+
+function renderTitle() {
+    const package = require("../package.json");
+    console.log(package.name + " by " + package.author.name + ' ('+package.author.url+')');
+    console.log('v'+package.version);
+    console.log();
 }
 
 function returnHelpAndExit() {
@@ -117,4 +129,22 @@ function returnHelpAndExit() {
     console.error("-v parameter will verbose output logs");
     console.error();
     process.exit(1);
+}
+
+function renderResults(totalAccountsNumber, pwnedAccountsNumber) {
+    console.log();
+    console.log("Results:");
+    console.log(`On ${totalAccountsNumber} accounts scanned, ${pwnedAccountsNumber} have been pwned.`);
+    console.log(`That's a total of ${(pwnedAccountsNumber/totalAccountsNumber) * 100}% of accounts that are pwned`);
+    if (outFile) {
+        console.log(`The list of ${includeNotBreached?"":"breached "}accounts ${includeNotBreached?"(breached or not) ":""} is rendered to ${outFile}`);
+    }
+}
+
+class APIError extends Error {
+    constructor(code, message) {
+        super(message);
+
+        this.code = code;
+    }
 }

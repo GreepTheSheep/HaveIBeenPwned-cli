@@ -1,11 +1,13 @@
 {
-  "name": "haveibeenpwned",
+  "name": "haveibeenpwned-cli",
   "version": "0.1.0",
   "description": "HaveIBeenPwned CLI",
-  "main": "index.js",
+  "main": "src/index.js",
+  "bin": "src/index.js",
   "scripts": {
-    "build:linux": "nexe -i src/index.js -o dist/HaveIBeenPwned-cli-linux -n HaveIBeenPwned -b",
-    "build:win": "nexe -i src/index.js -o dist/HaveIBeenPwned-cli-win.exe -n HaveIBeenPwned -b"
+    "build:linux": "pkg . -bt node16-linux -o HaveIBeenPwned-cli-linux",
+    "build:win": "pkg . -bt node16-win -o HaveIBeenPwned-cli-win.exe",
+    "pack": "pkg . -d"
   },
   "repository": {
     "type": "git",
@@ -21,11 +23,16 @@
     "url": "https://github.com/GreepTheSheep/HaveIBeenPwned-cli/issues"
   },
   "homepage": "https://github.com/GreepTheSheep/HaveIBeenPwned-cli#readme",
+  "pkg": {
+    "scripts": "src/**/*.js",
+    "targets": [ "node16-linux", "node16-win", "node16-macos" ],
+    "outputPath": "dist"
+  },
   "dependencies": {
     "dotenv": "^16.0.3",
     "node-fetch": "^2.6.7"
   },
   "devDependencies": {
-    "nexe": "^4.0.0-rc.1"
+    "pkg": "^5.8.0"
   }
 }

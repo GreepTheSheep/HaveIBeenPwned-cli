@@ -9,7 +9,7 @@ env:
 
 jobs:
   linux:
-    name: Build (Linux)
+    name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -34,58 +34,12 @@ jobs:
           prop_path: 'version'
 
       - name: Build
-        run: npm run build:linux
+        run: npm run pack
 
       - name: Upload binaries
         uses: actions/upload-artifact@v2
         with:
           name: haveibeenpwned-binaries-linux
-          path: dist/*.*
-
-      - name: Create a release
-        uses: softprops/action-gh-release@v1
-        with:
-          name: Release ${{steps.version.outputs.prop}}
-          tag_name: v${{steps.version.outputs.prop}}
-          prerelease: ${{ env.PRERELEASE }}
-          draft: ${{ env.DRAFT }}
-          files: dist/*.*
-
-  windows:
-    name: Build (Windows)
-    runs-on: windows-latest
-    timeout-minutes: 30
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Use Node.js 16
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Get Version from package.json
-        id: version
-        uses: notiz-dev/github-action-json-property@release
-        with:
-          path: 'package.json'
-          prop_path: 'version'
-
-      - name: Install Build Tools
-        run: npm i -g windows-build-tools
-
-      - name: Build
-        run: npm run build:win
-
-      - name: Upload binaries
-        uses: actions/upload-artifact@v2
-        with:
-          name: haveibeenpwned-binaries-windows
           path: dist/*.*
 
       - name: Create a release
