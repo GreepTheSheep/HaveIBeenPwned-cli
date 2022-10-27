@@ -10,9 +10,13 @@ This CLI utility will create a .csv file listing all breaches for a list of mail
 ./HaveIBeenPwned [-k API_KEY] [-f INPUT_FILE | -e MAIL_ADDRESS] (-o OUTPUT_FILE) (-all) (-v)
 ```
 `API_KEY` is required, you can use the .env file if you don't want to expose the key
+
 `INPUT_FILE` must be a raw text format, emails must be separated by lines (in CRLF format)
+
 `OUTPUT_FILE` must be a CSV format, if a file is already created, it will add new lines
+
 `-all` parameter will list emails that are not breached in the `OUTPUT_FILE`
+
 `-v` parameter will verbose output logs
 
 ## Build from source:
